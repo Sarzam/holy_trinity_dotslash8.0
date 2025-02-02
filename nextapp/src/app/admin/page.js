@@ -26,6 +26,10 @@ export default function AdminDashboard() {
   const [sortConfig, setSortConfig] = useState({ key: 'createdAt', direction: 'desc' });
   const [filterStatus, setFilterStatus] = useState('all');
   const [policyError, setPolicyError] = useState(null);
+  const [selectedPolicy, setSelectedPolicy] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [updateError, setUpdateError] = useState(null);
 
   useEffect(() => {
     fetchStats();
@@ -288,6 +292,123 @@ export default function AdminDashboard() {
     return null;
   };
 
+  const handleViewDetails = (policy) => {
+    setSelectedPolicy(policy);
+    setIsModalOpen(true);
+  };
+
+  const PolicyDetailsModal = ({ policy, onClose }) => {
+    if (!policy) return null;
+    
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="flex justify-between items-start mb-6">
+            <h2 className="text-2xl font-bold text-gray-900">{policy.title}</h2>
+            <button
+              onClick={onClose}
+              className="text-gray-500 hover:text-gray-700"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          
+          <div className="space-y-4">
+            <div>
+              <h3 className="text-lg font-semibold text-gray-700">Applicant Details</h3>
+              <p>Name: {policy.userId?.name || 'Unknown'}</p>
+              <p>Email: {policy.userId?.email || 'Not provided'}</p>
+            </div>
+            
+            <div>
+              <h3 className="text-lg font-semibold text-gray-700">Policy Details</h3>
+              <p className="whitespace-pre-wrap">{policy.description || 'No description provided'}</p>
+            </div>
+            
+            <div>
+              <h3 className="text-lg font-semibold text-gray-700">Status Information</h3>
+              <p>Current Status: 
+                <span className={`ml-2 px-2 inline-flex text-sm leading-5 font-semibold rounded-full ${getStatusBadgeColor(policy.status)}`}>
+                  {policy.status?.charAt(0).toUpperCase() + policy.status?.slice(1)}
+                </span>
+              </p>
+              <p>Submitted: {policy.createdAt ? format(new Date(policy.createdAt), 'PPpp') : 'Unknown'}</p>
+            </div>
+
+            {updateError && (
+              <div className="p-3 bg-red-100 text-red-700 rounded-md">
+                {updateError}
+              </div>
+            )}
+
+            {policy.status === 'pending' && (
+              <div className="flex gap-4 mt-6">
+                <button
+                  onClick={() => handleStatusUpdate(policy._id, 'approved')}
+                  disabled={isUpdating}
+                  className={`px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed ${
+                    isUpdating ? 'cursor-wait' : ''
+                  }`}
+                >
+                  {isUpdating ? 'Processing...' : 'Approve'}
+                </button>
+                <button
+                  onClick={() => handleStatusUpdate(policy._id, 'rejected')}
+                  disabled={isUpdating}
+                  className={`px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed ${
+                    isUpdating ? 'cursor-wait' : ''
+                  }`}
+                >
+                  {isUpdating ? 'Processing...' : 'Reject'}
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const handleStatusUpdate = async (policyId, newStatus) => {
+    try {
+      setIsUpdating(true);
+      setUpdateError(null);
+      
+      const response = await fetch(`/api/admin/policy-applications/${policyId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: newStatus }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update status');
+      }
+
+      // Update the local state to reflect the change
+      setPolicyApplications(prevPolicies =>
+        prevPolicies.map(policy =>
+          policy._id === policyId
+            ? { ...policy, status: newStatus }
+            : policy
+        )
+      );
+
+      // Close the modal
+      setIsModalOpen(false);
+      setSelectedPolicy(null);
+
+    } catch (error) {
+      console.error('Error updating policy status:', error);
+      setUpdateError('Failed to update policy status. Please try again.');
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
   return (
     <div className="min-h-screen pt-24 bg-[#403cd5] p-8">
       <div className="flex justify-between items-center mb-8">
@@ -511,7 +632,7 @@ export default function AdminDashboard() {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                           <button
-                            onClick={() => {/* Handle view details */}}
+                            onClick={() => handleViewDetails(policy)}
                             className="text-indigo-600 hover:text-indigo-900"
                           >
                             View Details
@@ -525,6 +646,15 @@ export default function AdminDashboard() {
           )}
         </div>
       </div>
+      {isModalOpen && (
+        <PolicyDetailsModal
+          policy={selectedPolicy}
+          onClose={() => {
+            setIsModalOpen(false);
+            setSelectedPolicy(null);
+          }}
+        />
+      )}
     </div>
   );
 }

@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server';
-import dbConnect from '@/lib/dbConnect';
+import dbConnect from '@/utils/db';
 import Admin from '@/models/admin';
 import jwt from 'jsonwebtoken';
-import { verifyCaptcha } from '@/lib/captcha';
 
 export async function POST(req) {
   try {

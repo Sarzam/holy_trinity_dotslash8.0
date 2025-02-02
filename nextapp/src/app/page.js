@@ -98,8 +98,7 @@ const Home = () => {
             Digital India, Empowered Citizens
           </div>
           <div className="description pt-4 text-3xl opacity-80">
-            Your one-stop portal for seamless government services <br /> and
-            digital documentation
+            Your Sathi For Making Bureaucracy Effortless, <br /> One Code At A Time!
           </div>
         </div>
       </section>

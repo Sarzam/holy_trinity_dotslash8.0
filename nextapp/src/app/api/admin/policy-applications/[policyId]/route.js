@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/utils/db';
-import PolicyApplication from '@/models/applypolicy';
+import mongoose from 'mongoose';
+import ApplyPolicy from '@/models/applypolicy'; // Make sure this model exists
 
 export async function PATCH(request, { params }) {
   try {
@@ -8,11 +9,21 @@ export async function PATCH(request, { params }) {
     const { policyId } = params;
     const { status } = await request.json();
 
-    const updatedPolicy = await PolicyApplication.findByIdAndUpdate(
+    if (!mongoose.Types.ObjectId.isValid(policyId)) {
+      return NextResponse.json(
+        { error: 'Invalid policy ID' },
+        { status: 400 }
+      );
+    }
+
+    const updatedPolicy = await ApplyPolicy.findByIdAndUpdate(
       policyId,
-      { status },
-      { new: true }
-    ).populate('userId', 'name email');
+      { 
+        status,
+        updatedAt: new Date()
+      },
+      { new: true } // Return the updated document
+    );
 
     if (!updatedPolicy) {
       return NextResponse.json(
@@ -21,11 +32,16 @@ export async function PATCH(request, { params }) {
       );
     }
 
-    return NextResponse.json(updatedPolicy);
+    return NextResponse.json({ 
+      success: true, 
+      status,
+      policy: updatedPolicy 
+    });
+
   } catch (error) {
     console.error('Error updating policy status:', error);
     return NextResponse.json(
-      { error: 'Internal Server Error' },
+      { error: 'Failed to update policy status' },
       { status: 500 }
     );
   }
