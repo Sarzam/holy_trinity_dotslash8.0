@@ -1,0 +1,68 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+body {
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Google Translate Widget Styles */
+.goog-te-gadget {
+  color: white !important;
+  font-family: inherit !important;
+}
+
+.goog-te-gadget-simple {
+  background-color: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  line-height: 1.5 !important;
+  color: white !important;
+}
+
+.goog-te-gadget-simple .goog-te-menu-value {
+  color: white !important;
+}
+
+.goog-te-gadget-simple img {
+  display: none;
+}
+
+.goog-te-banner-frame {
+  display: none !important;
+}
+
+/* Hide the Google Translate toolbar */
+.goog-te-banner-frame.skiptranslate {
+  display: none !important;
+}
+
+/* Hide the Google Translate toolbar's parent element */
+body {
+  top: 0 !important;
+}
+
+/* Additional specificity to ensure the toolbar is hidden */
+body > .skiptranslate {
+  display: none !important;
+}
+
+body > .goog-te-banner-frame {
+  display: none !important;
+}
+
+/* Add to your globals.css */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+}
