@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Selector</title>
+    <style>
+        body {
+            width: 400px;
+            padding: 15px;
+            font-family: "Poppins", Arial, sans-serif;
+            background-color: #f9f9f9;
+            text-align: center;
+        }
+        h3 {
+            margin-bottom: 10px;
+            color: #333;
+            font-size: 18px;
+        }
+        .text-container {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            background-color: #fff;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.1);
+            max-height: 150px;
+            overflow-y: auto;
+            font-size: 14px;
+            text-align: left;
+            margin-bottom: 15px;
+        }
+        #selectedText {
+            color: #555;
+        }
+        #simplifiedText {
+            color: #403cd5;
+        }
+        .chat-interface {
+            margin-top: 20px;
+            text-align: left;
+        }
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        #promptText {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        .button {
+            padding: 8px 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .button:hover {
+            background-color: #403cd5;
+        }
+        #outputDisplay {
+            background-color: #f0f0f0;
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 15px;
+            min-height: 60px;
+            font-size: 14px;
+            color: #333;
+        }
+        .error {
+            color: red;
+            font-size: 12px;
+            margin-top: 8px;
+        }
+        .loading {
+            color: #666;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <h3>Selected Text:</h3>
+    <div id="selectedText" class="text-container">No text selected</div>
+    <div id="error" class="error"></div>
+    <button id="clearBtn" class="button">Clear Selection</button>
+    
+    <h3>Simplified Version:</h3>
+    <div id="simplifiedText" class="text-container">No text selected</div>
+    
+    <div class="chat-interface">
+        <h3>Ask a Question:</h3>
+        <div class="input-group">
+            <input type="text" id="promptText" placeholder="Ask something about the selected text...">
+            <button id="submitBtn" class="button">Submit</button>
+        </div>
+        <div id="outputDisplay" class="text-container">Response will appear here...</div>
+    </div>
+    <script src="popup.js"></script>
+</body>
+</html>
